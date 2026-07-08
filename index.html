@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Gastos de Viagem</title>
+  <meta name="description" content="Controle de gastos de viagem — offline, com comprovantes e budget por evento.">
+  <meta name="theme-color" content="#0d9488">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+
+    <header class="topbar">
+      <button id="event-switcher" class="event-switcher" title="Trocar evento ativo">
+        <span id="topbar-event-name">Carregando…</span>
+        <span class="chev">▾</span>
+      </button>
+      <span id="offline-dot" class="offline-dot" title="Você está offline (o app funciona normalmente)">offline</span>
+    </header>
+
+    <main id="view-dash" class="view"></main>
+    <main id="view-list" class="view hidden"></main>
+    <main id="view-events" class="view hidden"></main>
+    <main id="view-settings" class="view hidden"></main>
+
+    <button id="fab" class="fab" aria-label="Adicionar gasto">+</button>
+
+    <nav class="bottomnav">
+      <button data-view="dash" class="nav-btn active"><span class="nav-ico">📊</span><span>Resumo</span></button>
+      <button data-view="list" class="nav-btn"><span class="nav-ico">🧾</span><span>Gastos</span></button>
+      <button data-view="events" class="nav-btn"><span class="nav-ico">🧳</span><span>Eventos</span></button>
+      <button data-view="settings" class="nav-btn"><span class="nav-ico">⚙️</span><span>Ajustes</span></button>
+    </nav>
+
+    <!-- ══════════ Folha de lançamento de gasto ══════════ -->
+    <div id="sheet-add" class="sheet hidden" role="dialog" aria-label="Lançar gasto">
+      <div class="sheet-backdrop" data-close-add></div>
+      <div class="sheet-body">
+        <header class="sheet-header">
+          <button id="add-close" class="icon-btn" aria-label="Fechar">✕</button>
+          <span id="add-title">Novo gasto</span>
+          <button id="add-delete" class="icon-btn danger hidden" aria-label="Excluir gasto">🗑️</button>
+        </header>
+
+        <div class="amount-row">
+          <select id="add-currency" class="currency-chip" aria-label="Moeda"></select>
+          <div id="add-amount" class="amount" aria-live="polite">R$&nbsp;0,00</div>
+        </div>
+        <div id="fx-row" class="fx-row hidden">
+          <label>1 <span id="fx-code">USD</span> =</label>
+          <input id="fx-rate" inputmode="decimal" placeholder="taxa" aria-label="Taxa de câmbio">
+          <span id="fx-base-label">BRL</span>
+          <span class="fx-eq">≈ <b id="fx-base">R$ 0,00</b></span>
+        </div>
+
+        <div id="cat-chips" class="chips cat-chips" aria-label="Categoria"></div>
+
+        <div class="add-fields">
+          <div class="field-row">
+            <input type="date" id="add-date" aria-label="Data">
+            <input id="add-merchant" list="merchant-list" placeholder="Estabelecimento" autocomplete="off" aria-label="Estabelecimento">
+            <datalist id="merchant-list"></datalist>
+          </div>
+          <div id="pay-chips" class="chips small" aria-label="Forma de pagamento"></div>
+          <input id="add-notes" placeholder="Notas (opcional)" aria-label="Notas">
+          <div class="photo-row">
+            <button id="btn-camera" class="mini-btn">📷 Câmera</button>
+            <button id="btn-gallery" class="mini-btn">🖼️ Galeria</button>
+            <button id="btn-ocr" class="mini-btn hidden">🔎 Ler valor</button>
+            <span id="add-thumb-wrap" class="hidden">
+              <img id="add-thumb" alt="Comprovante anexado">
+              <button id="thumb-remove" class="thumb-x" aria-label="Remover foto">✕</button>
+            </span>
+            <input type="file" id="file-camera" accept="image/*" capture="environment" hidden>
+            <input type="file" id="file-gallery" accept="image/*" hidden>
+          </div>
+        </div>
+
+        <div id="keypad" class="keypad"></div>
+        <button id="add-save" class="btn-save">Salvar</button>
+      </div>
+    </div>
+
+    <!-- ══════════ Seletor de evento ══════════ -->
+    <div id="sheet-event-picker" class="sheet hidden" role="dialog" aria-label="Trocar evento">
+      <div class="sheet-backdrop" data-close-picker></div>
+      <div class="sheet-body compact">
+        <header class="sheet-header"><span>Evento ativo</span></header>
+        <div id="event-picker-list"></div>
+      </div>
+    </div>
+
+    <!-- ══════════ Visualizador de comprovante ══════════ -->
+    <div id="img-viewer" class="img-viewer hidden">
+      <button id="img-viewer-close" class="icon-btn" aria-label="Fechar">✕</button>
+      <img id="img-viewer-img" alt="Comprovante">
+    </div>
+
+    <div id="toasts" class="toasts" aria-live="polite"></div>
+  </div>
+
+  <script src="vendor/xlsx.mini.min.js" defer></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
